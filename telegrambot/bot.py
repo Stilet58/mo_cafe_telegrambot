@@ -1,37 +1,49 @@
 import telebot
-import sqlite3
+from telegrambot.SQLighter import DBManager
+from telegrambot import config
+from django_app.models import *
+import django
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mo_cafe_telegrambot.settings")
+django.setup()
 
 
-token = '464472587:AAHSfGXxyNe8kKLvG0ad1YdMtC4ZKRSgDs4'
-database_name = 'db.sqlite3'
-
-bot = telebot.TeleBot(token)
-connection = sqlite3.connect(database_name)
-cursor = connection.cursor()
-all_data = cursor.execute('SELECT * FROM django_app_food').fetchall()
-print(all_data)
+bot = telebot.TeleBot(config.token)
 
 
 # Обработчик команд '/start' и '/help'.
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
-    bot.send_message(message.chat.id, 'Чтобы посмотреть меню, введите /menu')
+    bot.send_message(message.chat.id, 'Привет! Я помогу сделать тебе заказ в Мо.Кафе. '
+                                      'Для просмотра меню на сегодня введи /menu')
 
-'''
+
 @bot.message_handler(commands=['menu'])
 def menu(message):
     # Подключаемся к БД
-    connection = sqlite3.connect(database_name)
-    cursor = connection.cursor()
-    all_data = cursor.execute('SELECT * FROM django_app_food').fetchall()
-    bot.send_message(message.chat.id, all_data)
+    #db_worker = DBManager(config.database_name)
+    all_data = Food.objects.all()#db_worker.select_all()
+    print(all_data)
+'''
+    cafe_menu = ''
+    arr_category = ['salads', 'first_meal', 'second_courses', 'garnishes', 'dessert', 'beverages']
+    arr_category_rus = ['Салаты', 'Первые блюда', 'Вторые блюда', 'Гарниры', 'Десерты', 'Напитки']
+
+    for j in range(0, len(arr_category), 1):
+        cafe_menu = cafe_menu + arr_category_rus[j] + '\n'
+        for i in range(0, len(all_data), 1):
+            if all_data[i][3] == arr_category[j]:
+                cafe_menu = cafe_menu + str(all_data[i][0]) + ' - ' + all_data[i][1] + ' - ' + str(all_data[i][2]) + 'р.\n'
+            else:
+                continue
+        cafe_menu = cafe_menu + '\n'
+
+    bot.send_message(message.chat.id, cafe_menu + 'Для заказа введи через запятую номера блюд, '
+                                                  'которые хочешь заказать, и отправь мне. '
+                                                  'Номера находятся слева от названий.')
     # Отсоединяемся от БД
-    connection.close()
+    #db_worker.close()
 '''
-'''
-@bot.message_handler(content_types=["text"])
-def repeat_all_messages(message):  # Название функции не играет никакой роли, в принципе
-    bot.send_message(message.chat.id, message.text)
-'''
+
 if __name__ == '__main__':
      bot.polling(none_stop=True)
