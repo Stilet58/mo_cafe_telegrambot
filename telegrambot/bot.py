@@ -1,16 +1,17 @@
 import telebot
+import json
 from telegrambot.SQLighter import DBManager
 from telegrambot import config
-from django_app.models import *
-import django
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mo_cafe_telegrambot.settings")
-django.setup()
+
 
 
 bot = telebot.TeleBot(config.token)
 
-
+'''
+@bot.message_handler(content_types=['text'])
+def handle_text_doc(message):
+    print(message)
+'''
 # Обработчик команд '/start' и '/help'.
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
@@ -21,10 +22,9 @@ def handle_start_help(message):
 @bot.message_handler(commands=['menu'])
 def menu(message):
     # Подключаемся к БД
-    #db_worker = DBManager(config.database_name)
-    all_data = Food.objects.all()#db_worker.select_all()
-    print(all_data)
-'''
+    db_worker = DBManager(config.database_name)
+    all_data = db_worker.select_all()
+
     cafe_menu = ''
     arr_category = ['salads', 'first_meal', 'second_courses', 'garnishes', 'dessert', 'beverages']
     arr_category_rus = ['Салаты', 'Первые блюда', 'Вторые блюда', 'Гарниры', 'Десерты', 'Напитки']
@@ -42,8 +42,9 @@ def menu(message):
                                                   'которые хочешь заказать, и отправь мне. '
                                                   'Номера находятся слева от названий.')
     # Отсоединяемся от БД
-    #db_worker.close()
-'''
+    db_worker.close()
+
 
 if __name__ == '__main__':
      bot.polling(none_stop=True)
+
