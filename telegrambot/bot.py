@@ -7,11 +7,7 @@ from telegrambot import config
 
 bot = telebot.TeleBot(config.token)
 
-'''
-@bot.message_handler(content_types=['text'])
-def handle_text_doc(message):
-    print(message)
-'''
+
 # Обработчик команд '/start' и '/help'.
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
@@ -31,16 +27,42 @@ def menu(message):
 
     for j in range(0, len(arr_category), 1):
         cafe_menu = cafe_menu + arr_category_rus[j] + '\n'
+
         for i in range(0, len(all_data), 1):
             if all_data[i][3] == arr_category[j]:
                 cafe_menu = cafe_menu + str(all_data[i][0]) + ' - ' + all_data[i][1] + ' - ' + str(all_data[i][2]) + 'р.\n'
             else:
                 continue
+
         cafe_menu = cafe_menu + '\n'
 
     bot.send_message(message.chat.id, cafe_menu + 'Для заказа введи через запятую номера блюд, '
                                                   'которые хочешь заказать, и отправь мне. '
                                                   'Номера находятся слева от названий.')
+    # Отсоединяемся от БД
+    db_worker.close()
+
+
+@bot.message_handler(content_types=['text'])
+def write_order(message):
+    user_id = message.from_user.id
+    list_food = message.text.split(',')
+    order_numbers = sorted([int(item) for item in list_food])
+
+    # Подключаемся к БД
+    db_worker = DBManager(config.database_name)
+    all_data = db_worker.select_all()
+    order_sum = 0
+
+    for i in range(0, len(order_numbers), 1):
+
+        for j in range(0, len(all_data), 1):
+            if all_data[j][0] == order_numbers[i]:
+                order_sum += all_data[j][2]
+            else:
+                continue
+
+    db_worker.insert_order(user_id, order_sum)
     # Отсоединяемся от БД
     db_worker.close()
 

@@ -12,7 +12,7 @@ class WorkersAdmin(admin.ModelAdmin):
     list_display_links = ('first_name',  'last_name')
 
 class OrdersAdmin(admin.ModelAdmin):
-    list_display = ('id', 'date_of_creation',  'customer', 'order', 'sum') #Сортировка отображения на странице
+    list_display = ('id', 'date_of_creation',  'customer', 'get_dishes_list', 'sum') #Сортировка отображения на странице
 
 admin.site.register(Food, FoodAdmin)
 admin.site.register(Workers, WorkersAdmin)

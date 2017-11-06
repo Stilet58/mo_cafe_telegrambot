@@ -12,6 +12,11 @@ class DBManager:
         with self.connection:
             return self.cursor.execute('SELECT * FROM django_app_food').fetchall()
 
+    def insert_order(self, user_id, order_sum):
+        """ Записываем заказ в БД """
+        with self.connection:
+            self.cursor.execute('INSERT INTO django_app_orders (customer_id, sum )'
+                                'VALUES (?, ?)', (user_id, order_sum))
 
     def close(self):
         """ Закрываем текущее соединение с БД """
