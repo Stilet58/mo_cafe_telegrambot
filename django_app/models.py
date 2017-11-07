@@ -42,7 +42,7 @@ class Workers(models.Model):
 
 #Модель для заказов
 class Orders(models.Model):
-    date_of_creation = models.DateField('Дата создания заказа', auto_now_add=True)
+    date_of_creation = models.DateField('Дата создания заказа')
     customer = models.ForeignKey(Workers, verbose_name='Клиент', on_delete=models.CASCADE, to_field='telegram_user_id')
     sum = models.IntegerField('Cумма заказа')
     dishes = models.ManyToManyField(Food, verbose_name='Блюда в заказе')
@@ -63,3 +63,16 @@ class Orders(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+#Модель для потраченных сумм за месяц
+class ResultsMonth(models.Model):
+    worker = models.ForeignKey(Workers, verbose_name='Работник', on_delete=models.CASCADE, to_field='telegram_user_id')
+    amount_per_month = models.IntegerField('Стоимость заказов за месяц')
+
+    class Meta:
+        verbose_name = 'Итог месяца'
+        verbose_name_plural = 'Итоги месяца'
+
+    def __str__(self):
+        return str(self.worker)

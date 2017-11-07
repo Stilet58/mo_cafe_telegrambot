@@ -55,11 +55,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='orders',
             name='customer',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mo_cafe.Workers', to_field='telegram_user_id', verbose_name='Клиент'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_app.Workers', to_field='telegram_user_id', verbose_name='Клиент'),
         ),
         migrations.AddField(
             model_name='orders',
             name='dishes',
-            field=models.ManyToManyField(to='mo_cafe.Food', verbose_name='Блюда в заказе'),
+            field=models.ManyToManyField(to='django_app.Food', verbose_name='Блюда в заказе'),
         ),
     ]
