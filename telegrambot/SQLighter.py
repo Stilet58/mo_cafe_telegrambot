@@ -10,12 +10,12 @@ class DBManager:
     def select_all(self):
         """ Получаем все строки """
         with self.connection:
-            return self.cursor.execute('SELECT * FROM django_app_food').fetchall()
+            return self.cursor.execute('SELECT * FROM mo_cafe_food').fetchall()
 
     def insert_order(self, user_id, order_sum):
         """ Записываем заказ в БД """
         with self.connection:
-            self.cursor.execute('INSERT INTO django_app_orders (customer_id, sum )'
+            self.cursor.execute('INSERT INTO mo_cafe_orders (customer_id, sum )'
                                 'VALUES (?, ?)', (user_id, order_sum))
 
     def close(self):
