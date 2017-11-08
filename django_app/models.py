@@ -26,7 +26,7 @@ class Food(models.Model):
         return str(self.name)
 
 
-#Модель для работников
+#Модель работников компании
 class Workers(models.Model):
     first_name = models.CharField('Имя', max_length=200)
     last_name = models.CharField('Фамилия', max_length=200)
@@ -40,7 +40,7 @@ class Workers(models.Model):
         return self.last_name + ' ' + self.first_name
 
 
-#Модель для заказов
+#Модель заказов
 class Orders(models.Model):
     date_of_creation = models.DateField('Дата создания заказа')
     customer = models.ForeignKey(Workers, verbose_name='Клиент', on_delete=models.CASCADE, to_field='telegram_user_id')
@@ -51,6 +51,7 @@ class Orders(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
+    #Отображение поля с заказнными блюдами в админке
     def get_dishes_list(self):
         dishes_list = self.dishes.get_queryset()
         dishes_str = ''
@@ -58,14 +59,14 @@ class Orders(models.Model):
             dishes_str += ', ' + dishes.name
         return dishes_str.lstrip(', ')
 
-    # В админке поле будет называться не get_nomination, а Номинации
+    # Название поля в админке
     get_dishes_list.short_description = 'Блюда в заказе'
 
     def __str__(self):
         return str(self.id)
 
 
-#Модель для потраченных сумм за месяц
+#Модель потраченных сумм за месяц
 class ResultsMonth(models.Model):
     worker = models.ForeignKey(Workers, verbose_name='Работник', on_delete=models.CASCADE, to_field='telegram_user_id')
     amount_per_month = models.IntegerField('Стоимость заказов за месяц')
